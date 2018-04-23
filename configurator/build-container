@@ -1,0 +1,6 @@
+#!/bin/bash
+
+GOOS=linux GOARCH=arm go build -o configurator .
+docker build -t povilasv/configurator:arm-0.1.0 .
+docker push povilasv/configurator:arm-0.1.0
+rm configurator

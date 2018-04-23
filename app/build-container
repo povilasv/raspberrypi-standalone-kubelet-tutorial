@@ -1,0 +1,6 @@
+#!/bin/bash
+
+GOOS=linux GOARCH=arm go build -o app .
+docker build -t povilasv/app:arm-0.1.0 .
+docker push povilasv/app:arm-0.1.0
+rm app

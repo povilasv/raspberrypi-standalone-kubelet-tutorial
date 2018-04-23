@@ -1,0 +1,33 @@
+[Unit]
+Description=kubelet
+Requires=docker.service 
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker stop %n
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull gcr.io/google_containers/hyperkube-arm:v1.10.1
+ExecStart=/usr/bin/docker run \
+  --rm \
+  --name %n \
+  --privileged \
+  --net=host \
+  --pid=host \
+  -v /:/rootfs \
+  -v /sys:/sys:ro \
+  -v /var/run:/var/run \
+  -v /var/lib/kubelet:/var/lib/kubelet \
+  -v /etc/kubernetes:/etc/kubernetes \
+  gcr.io/google_containers/hyperkube-arm:v1.10.1 /hyperkube kubelet \
+  --allow-privileged=true \
+  --enable-server=false \
+  --hostname-override=127.0.0.1 \
+  --config=/etc/kubernetes/config.yaml \
+  --containerized \
+  --v=2
+ExecStop=/usr/bin/docker stop -t 10 %n
+
+[Install]
+WantedBy=multi-user.target
